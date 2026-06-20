@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Image Audit Ledger — Gemini Vision QA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1F4F3;
+    --surface:#FFFFFF;
+    --surface-2:#F7FAF9;
+    --ink:#16201D;
+    --ink-soft:#5B6864;
+    --ink-faint:#8B958F;
+    --line:#DCE3E0;
+    --line-strong:#C4CEC9;
+    --accent:#0C6E78;
+    --accent-dark:#085059;
+    --accent-soft:#E2EEEE;
+    --pass:#1F7A4D;
+    --pass-soft:#E3F1E8;
+    --fail:#B23B20;
+    --fail-soft:#FBE7E1;
+    --warn:#A8740C;
+    --warn-soft:#F6EBD3;
+    --radius-card:14px;
+    --radius-ctl:9px;
+    --shadow-1: 0 1px 2px rgba(22,32,29,0.04), 0 1px 1px rgba(22,32,29,0.03);
+    --font-display:'Space Grotesk', 'Inter', sans-serif;
+    --font-body:'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; height: 100%; }
+  body{
+    margin:0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  ::selection{ background:var(--accent-soft); color:var(--accent-dark); }
+  a{ color:var(--accent); }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+  /* ---------- Header ---------- */
+  header.top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    padding: 16px 24px;
+    background: var(--surface);
+    border-bottom:1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{
+    width:36px; height:36px; border-radius:10px;
+    background:linear-gradient(150deg, var(--accent), var(--accent-dark));
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:var(--shadow-1);
+  }
+  .brand-mark svg{ width:20px; height:20px; }
+  .brand-text h1{ font-family:var(--font-display); font-size:18px; font-weight:700; margin:0; }
+
+  .global-config{ display:flex; align-items:center; gap: 16px; }
+  .cfg-group{ display:flex; align-items:center; gap: 8px; }
+  .cfg-label{ font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+  
+  input[type="password"], input[type="text"], input[type="number"], select, textarea {
+    font-family:var(--font-body);
+    font-size:13px;
+    padding:8px 12px;
+    border:1px solid var(--line-strong);
+    border-radius:var(--radius-ctl);
+    background:var(--surface);
+    color:var(--ink);
+    transition:border-color .15s ease;
+  }
+  input::placeholder, textarea::placeholder{ color:var(--ink-faint); }
+  input:focus, select:focus, textarea:focus{ border-color:var(--accent); outline:none; }
+
+  /* API Key Wrapper for Eye Icon */
+  .input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-with-icon input { padding-right: 36px; }
+  .icon-btn {
+    position: absolute;
+    right: 4px;
+    background: transparent;
+    border: none;
+    color: var(--ink-soft);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 6px;
+  }
+  .icon-btn:hover { background: var(--surface-2); color: var(--ink); }
+
+  /* ---------- Layout Split ---------- */
+  .layout{ display: flex; flex: 1; overflow: hidden; }
+  .panel{ flex: 1; display: flex; flex-direction: column; padding: 24px; overflow-y: auto; }
+  .panel-left{ border-right: 1px solid var(--line); background: var(--surface-2); }
+  .panel-right{ background: var(--bg); }
+
+  .panel-header{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .panel-header h2{ font-family:var(--font-display); font-size: 18px; margin: 0; }
+
+  /* ---------- Left: Checklists ---------- */
+  .checklist-card{
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius-card); padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow-1);
+  }
+  .cl-header{ display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+  .cl-num{ font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--accent); }
+  .cl-title{ font-size: 14px; font-weight: 600; }
+  
+  .file-upload-row{ display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .file-input-wrapper{ position: relative; overflow: hidden; display: inline-block; }
+  .file-input-wrapper input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
+  .btn-upload{
+    font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 6px;
+    background: var(--surface-2); border: 1px solid var(--line-strong); cursor: pointer;
+  }
+  .file-name{ font-family: var(--font-mono); font-size: 12px; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
+  
+  /* Accordion */
+  details.prompt-accordion { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  details.prompt-accordion summary {
+    font-size: 13px; font-weight: 500; color: var(--ink-soft); padding: 8px 12px;
+    background: var(--surface-2); cursor: pointer; user-select: none; list-style: none;
+  }
+  details.prompt-accordion summary::-webkit-details-marker { display: none; }
+  details.prompt-accordion summary:hover { background: var(--line); color: var(--ink); }
+  .prompt-content { padding: 12px; background: var(--surface); border-top: 1px solid var(--line); }
+  .prompt-content textarea { width: 100%; height: 120px; resize: vertical; line-height: 1.4; }
+
+  /* Pagination */
+  .pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .page-info { font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    font-family:var(--font-body); font-size:14px; font-weight:600;
+    padding:10px 18px; border-radius:var(--radius-ctl); border:1px solid transparent;
+    cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    transition:transform .08s ease, opacity .15s ease, background .15s ease;
+  }
+  .btn:active{ transform:translateY(1px); }
+  .btn:disabled{ opacity:0.45; cursor:not-allowed; transform:none; }
+  .btn-primary{ background:var(--accent); color:#fff; width: 100%; font-size: 15px; padding: 14px;}
+  .btn-primary:hover:not(:disabled){ background:var(--accent-dark); }
+  .btn-secondary{ background:transparent; color:var(--ink); border:1px solid var(--line-strong); padding: 8px 14px; font-size: 13px; }
+  .btn-secondary:hover:not(:disabled){ background:var(--surface-2); }
+
+  /* ---------- Right: Results & Score ---------- */
+  .score-card{
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); 
+    padding: 24px; margin-bottom: 24px; text-align: center; box-shadow: var(--shadow-1);
+  }
+  .score-val{ font-family: var(--font-display); font-size: 36px; font-weight: 700; color: var(--ink); }
+  .score-label{ font-size: 14px; color: var(--ink-soft); margin-top: 4px; }
+  .score-val.pass{ color: var(--pass); }
+  
+  .results-actions { display: flex; gap: 12px; margin-bottom: 24px; }
+
+  .results-feed{ display: flex; flex-direction: column; gap: 12px; }
+  .feed-item{
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); 
+    padding: 16px; display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: start;
+    box-shadow: var(--shadow-1);
+  }
+  .feed-thumb{ width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: var(--surface-2); border: 1px solid var(--line); }
+  .feed-body h3{ font-size: 14px; font-weight: 600; margin: 0 0 4px; }
+  .feed-reason{ font-size: 13px; color: var(--ink-soft); margin: 0; line-height: 1.4; }
+  .feed-meta{ display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  
+  .status-badge{ font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; }
+  .status-badge.pass{ background: var(--pass-soft); color: var(--pass); }
+  .status-badge.fail{ background: var(--fail-soft); color: var(--fail); }
+  .status-badge.error{ background: var(--warn-soft); color: var(--warn); }
+  
+  .conf-pill{ font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); }
+  .empty-state{ text-align: center; padding: 40px 20px; color: var(--ink-faint); font-size: 14px; }
+</style>
+</head>
+<body>
+
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 7a2 2 0 0 1 2-2h2.2l1-1.4A1 1 0 0 1 9 3h6a1 1 0 0 1 .8.6L16.8 5H19a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" stroke="#fff" stroke-width="1.6"/>
+          <circle cx="12" cy="13" r="3.4" stroke="#fff" stroke-width="1.6"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Image Audit Ledger</h1>
+      </div>
+    </div>
+
+    <div class="global-config">
+      <div class="cfg-group">
+        <label class="cfg-label" for="apiKeyInput">API Key</label>
+        <div class="input-with-icon">
+          <input type="password" id="apiKeyInput" placeholder="AIza..." style="width: 180px;" autocomplete="off" />
+          <button type="button" class="icon-btn" id="toggleKeyBtn" title="Show / hide key" aria-label="Show or hide API key">
+            <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="cfg-group">
+        <label class="cfg-label" for="modelSelect">Model</label>
+        <select id="modelSelect">
+          <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+          <option value="gemini-2.5-pro">gemini-2.5-pro</option>
+          <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
+          <option value="gemini-3.5-flash">gemini-3.5-flash</option>
+        </select>
+      </div>
+      <div class="cfg-group">
+        <label class="cfg-label" for="delayInput">Delay (ms)</label>
+        <input type="number" id="delayInput" value="350" min="0" max="10000" step="50" style="width: 80px;" />
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="panel panel-left">
+      <div class="panel-header">
+        <h2>Audit Checklists</h2>
+        <div class="cfg-group">
+          <label class="cfg-label">Items per page:</label>
+          <select id="qtySelect">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+      </div>
+      
+      <div id="checklistContainer">
+        </div>
+
+      <div class="pagination">
+        <button class="btn-secondary" id="prevBtn" disabled>Previous</button>
+        <span class="page-info" id="pageInfo">Page 1 of X</span>
+        <button class="btn-secondary" id="nextBtn">Next</button>
+      </div>
+    </div>
+
+    <div class="panel panel-right">
+      <div class="panel-header">
+        <h2>Results & Score</h2>
+      </div>
+
+      <div class="score-card">
+        <div class="score-val" id="scoreValue">0 / 0</div>
+        <div class="score-label" id="scoreLabel">Passed Checklists</div>
+      </div>
+
+      <div class="results-actions">
+        <button class="btn btn-primary" id="runBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 4.5v15l13-7.5-13-7.5Z" fill="currentColor"/></svg>
+          Run Audit
+        </button>
+        <button class="btn btn-secondary" id="exportBtn" style="display:none;">
+          Export CSV
+        </button>
+      </div>
+
+      <div class="results-feed" id="resultsFeed">
+        <div class="empty-state">Upload images and run the audit to see results here. Un-uploaded checklists will be skipped.</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+
+  const DEFAULT_CHECKPOINTS = [
+    { label:'Main Brand Signage & Illumination', rule:'Compare brightness/contrast across the lettering and look for dark or shadowed letters, dead bulbs, or uneven illumination.' },
+    { label:'Paved Approach, Driveway & Gates', rule:'Scan the ground surface for dark high-contrast patches (oil leaks), litter, standing puddles, or cracked paving.' },
+    { label:'Customer Parking Allocation', rule:'Identify parked vehicles in customer bays; flag if dealer/staff vehicles appear to occupy customer parking.' },
+    { label:'Valet Desk & Security Guard Presence', rule:'Confirm a person is visibly present and attentive at the entrance; flag if absent or distracted.' },
+    { label:'Entrance Glass Doors & Tracks', rule:'Look at the glass surface and tracks for smudges, handprints, dust, or debris.' },
+    { label:'Foot Mats & Welcome Walkway', rule:'Check that the mat is square to the door frame, unfolded, clean, and not curled at the edges.' },
+    { label:'Main Floor Cleanliness', rule:'Evaluate floor reflection uniformity; flag dull, scuffed, stained, or visibly dirty patches.' },
+    { label:'Ceiling Spotlights & Tracks', rule:'Scan the ceiling for dark/unlit circles among the spotlights indicating missing bulbs.' },
+    { label:'HVAC Diffusers & Ambient Temp', rule:'Read visible digital thermostats; check vents for visible dust rings.' },
+    { label:'Customer Lounge Seating Alignment', rule:'Check that furniture is neatly arranged and aligned, consistent with a tidy lounge.' }
+  ];
+
+  while(DEFAULT_CHECKPOINTS.length < 32) {
+    DEFAULT_CHECKPOINTS.push({
+      label: `Additional Checkpoint ${DEFAULT_CHECKPOINTS.length + 1}`,
+      rule: 'Carefully assess the image against standard facility compliance guidelines.'
+    });
+  }
+
+  const state = {
+    checklists: [], 
+    results: [],
+    currentPage: 1,
+    itemsPerPage: 5
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const checklistContainer = $('checklistContainer');
+  const qtySelect = $('qtySelect');
+  const runBtn = $('runBtn');
+  const exportBtn = $('exportBtn');
+  const resultsFeed = $('resultsFeed');
+  const scoreValue = $('scoreValue');
+  const apiKeyInput = $('apiKeyInput');
+  const toggleKeyBtn = $('toggleKeyBtn');
+  const eyeIcon = $('eyeIcon');
+  const modelSelect = $('modelSelect');
+  const delayInput = $('delayInput');
+  const prevBtn = $('prevBtn');
+  const nextBtn = $('nextBtn');
+  const pageInfo = $('pageInfo');
+
+  // API Key Toggle
+  toggleKeyBtn.addEventListener('click', () => {
+    const show = apiKeyInput.type === 'password';
+    apiKeyInput.type = show ? 'text' : 'password';
+    eyeIcon.innerHTML = show
+      ? '<path d="m3 3 18 18M10.6 10.7a2.6 2.6 0 0 0 3.7 3.7M9.3 5.3A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a14.6 14.6 0 0 1-3.2 4.1M6.6 6.6A14.7 14.7 0 0 0 2 12s3.6 7 10 7c1.2 0 2.3-.2 3.4-.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
+      : '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/>';
+  });
+
+  function buildDefaultPrompt(label, rule) {
+    return `You are an expert QA auditor reviewing a single image for a facility audit.
+Your task is to evaluate the following specific checkpoint:
+
+CHECKPOINT: "${label}"
+GUIDANCE: ${rule}
+
+Step 1: Determine if the image is clear enough to evaluate this checkpoint.
+Step 2: Determine if the checkpoint PASSES or FAILS based strictly on visual evidence.
+Step 3: Provide a concise 1-2 sentence reason for your verdict.
+Step 4: Provide a confidence score from 0 to 100.
+
+Respond strictly in JSON format:
+{
+  "pass": boolean,
+  "confidence": number,
+  "reason": "string"
+}`;
+  }
+
+  // Initialize Data Store Once
+  function initData() {
+    state.checklists = DEFAULT_CHECKPOINTS.map((cp, index) => ({
+      id: index,
+      label: cp.label,
+      file: null,
+      filename: 'No file selected',
+      thumbBase64: null,
+      promptText: buildDefaultPrompt(cp.label, cp.rule)
+    }));
+  }
+
+  // Render Page
+  function renderPage() {
+    checklistContainer.innerHTML = '';
+    
+    const totalItems = state.checklists.length;
+    const itemsPer = state.itemsPerPage === 'all' ? totalItems : parseInt(state.itemsPerPage, 10);
+    const totalPages = Math.ceil(totalItems / itemsPer);
+    
+    const startIndex = (state.currentPage - 1) * itemsPer;
+    const endIndex = Math.min(startIndex + itemsPer, totalItems);
+
+    for (let i = startIndex; i < endIndex; i++) {
+      const item = state.checklists[i];
+      const card = document.createElement('div');
+      card.className = 'checklist-card';
+      card.innerHTML = `
+        <div class="cl-header">
+          <span class="cl-num">#${i + 1}</span>
+          <span class="cl-title">${item.label}</span>
+        </div>
+        
+        <div class="file-upload-row">
+          <div class="file-input-wrapper">
+            <button class="btn-upload">${item.file ? 'Change Image' : 'Choose Image'}</button>
+            <input type="file" accept="image/*" id="file-${i}" />
+          </div>
+          <span class="file-name" id="filename-${i}">${item.filename}</span>
+        </div>
+
+        <details class="prompt-accordion">
+          <summary>Edit Prompt</summary>
+          <div class="prompt-content">
+            <textarea id="prompt-${i}">${item.promptText}</textarea>
+          </div>
+        </details>
+      `;
+      checklistContainer.appendChild(card);
+
+      $(`file-${i}`).addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          item.filename = file.name;
+          $(`filename-${i}`).textContent = file.name;
+          item.file = file;
+          item.thumbBase64 = await fileToDataUrl(file);
+          e.target.previousElementSibling.textContent = 'Change Image';
+        } else {
+          item.filename = 'No file selected';
+          $(`filename-${i}`).textContent = item.filename;
+          item.file = null;
+          item.thumbBase64 = null;
+          e.target.previousElementSibling.textContent = 'Choose Image';
+        }
+      });
+
+      $(`prompt-${i}`).addEventListener('input', (e) => {
+        item.promptText = e.target.value;
+      });
+    }
+
+    // Update Pagination UI
+    pageInfo.textContent = state.itemsPerPage === 'all' ? `Showing All ${totalItems}` : `Page ${state.currentPage} of ${totalPages}`;
+    prevBtn.disabled = state.currentPage === 1;
+    nextBtn.disabled = state.currentPage === totalPages || state.itemsPerPage === 'all';
+  }
+
+  // Pagination Handlers
+  prevBtn.addEventListener('click', () => {
+    if (state.currentPage > 1) { state.currentPage--; renderPage(); }
+  });
+  nextBtn.addEventListener('click', () => {
+    const totalPages = Math.ceil(state.checklists.length / (parseInt(state.itemsPerPage, 10) || state.checklists.length));
+    if (state.currentPage < totalPages) { state.currentPage++; renderPage(); }
+  });
+  qtySelect.addEventListener('change', () => {
+    state.itemsPerPage = qtySelect.value;
+    state.currentPage = 1; 
+    renderPage();
+  });
+
+  initData();
+  renderPage();
+
+  // --- Helpers ---
+  function fileToDataUrl(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  function splitDataUrl(dataUrl){
+    const m = /^data:(.*?);base64,(.*)$/.exec(dataUrl);
+    return { mimeType: m[1] || 'image/jpeg', base64: m[2] };
+  }
+  function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+  function escapeCsv(val){ return '"' + String(val).replace(/"/g, '""') + '"'; }
+
+  // --- API Call ---
+  async function callGemini(apiKey, model, base64, mimeType, prompt) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+    const body = {
+      contents: [{ role: 'user', parts: [ { text: prompt }, { inline_data: { mime_type: mimeType, data: base64 } } ] }],
+      generationConfig: { responseMimeType: 'application/json', temperature: 0.2 }
+    };
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body: JSON.stringify(body) });
+    if (!res.ok) throw new Error(`API Error ${res.status}`);
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error('Empty response');
+    try {
+      return JSON.parse(text.replace(/^```json\s*|^```\s*|\s*```$/gim, '').trim());
+    } catch(e) { throw new Error('Failed to parse JSON'); }
+  }
+
+  // --- Execution ---
+  runBtn.addEventListener('click', async () => {
+    const apiKey = apiKeyInput.value.trim();
+    if (!apiKey) { alert('Please enter your Gemini API Key.'); return; }
+
+    const activeItems = state.checklists.filter(c => c.file !== null);
+    if (activeItems.length === 0) { alert('Please upload an image to at least one checklist to evaluate.'); return; }
+
+    const model = modelSelect.value;
+    const delay = parseInt(delayInput.value, 10) || 350;
+
+    runBtn.disabled = true;
+    exportBtn.style.display = 'none';
+    runBtn.textContent = 'Running...';
+    resultsFeed.innerHTML = '';
+    state.results = [];
+    let passCount = 0;
+
+    for (let i = 0; i < activeItems.length; i++) {
+      const item = activeItems[i];
+      const { base64, mimeType } = splitDataUrl(item.thumbBase64);
+      let result;
+      try {
+        const resJson = await callGemini(apiKey, model, base64, mimeType, item.promptText);
+        result = { id: item.id, label: item.label, thumb: item.thumbBase64, pass: resJson.pass === true, confidence: resJson.confidence || 0, reason: resJson.reason || 'No reason provided.', error: false };
+      } catch (err) {
+        result = { id: item.id, label: item.label, thumb: item.thumbBase64, pass: false, confidence: 0, reason: `Error: ${err.message}`, error: true };
+      }
+
+      state.results.push(result);
+      if (result.pass && !result.error) passCount++;
+
+      const statusClass = result.error ? 'error' : (result.pass ? 'pass' : 'fail');
+      const statusText = result.error ? 'ERROR' : (result.pass ? 'PASS' : 'FAIL');
+      const feedItem = document.createElement('div');
+      feedItem.className = 'feed-item';
+      feedItem.innerHTML = `
+        <img src="${result.thumb}" class="feed-thumb" alt="thumb">
+        <div class="feed-body"><h3>#${item.id + 1}: ${item.label}</h3><p class="feed-reason">${result.reason}</p></div>
+        <div class="feed-meta"><span class="status-badge ${statusClass}">${statusText}</span><span class="conf-pill">Conf: ${result.confidence}%</span></div>
+      `;
+      resultsFeed.appendChild(feedItem);
+
+      scoreValue.textContent = `${passCount} / ${i + 1}`;
+      scoreValue.classList.toggle('pass', passCount === activeItems.length);
+
+      if (i < activeItems.length - 1) await sleep(delay);
+    }
+
+    scoreValue.textContent = `${passCount} / ${activeItems.length}`;
+    runBtn.disabled = false;
+    runBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 4.5v15l13-7.5-13-7.5Z" fill="currentColor"/></svg> Run Audit`;
+    exportBtn.style.display = 'block';
+  });
+
+  // --- Export CSV ---
+  exportBtn.addEventListener('click', () => {
+    if (state.results.length === 0) return;
+    const headers = ['Checklist Number', 'Checkpoint Label', 'Verdict', 'Confidence', 'Reason'];
+    const rows = state.results.map(r => [
+      r.id + 1,
+      escapeCsv(r.label),
+      r.error ? 'ERROR' : (r.pass ? 'PASS' : 'FAIL'),
+      r.confidence,
+      escapeCsv(r.reason)
+    ]);
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `audit_results_${new Date().toISOString().replace(/[:.]/g, '-')}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+})();
+</script>
+</body>
+</html>
