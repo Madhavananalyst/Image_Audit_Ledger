@@ -37,15 +37,9 @@
   *{ box-sizing:border-box; }
   html{ -webkit-text-size-adjust:100%; height: 100%; }
   body{
-    margin:0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: var(--bg);
-    color:var(--ink);
-    font-family:var(--font-body);
-    line-height:1.5;
-    -webkit-font-smoothing:antialiased;
+    margin:0; height: 100vh; display: flex; flex-direction: column;
+    background: var(--bg); color:var(--ink); font-family:var(--font-body);
+    line-height:1.5; -webkit-font-smoothing:antialiased;
   }
 
   ::selection{ background:var(--accent-soft); color:var(--accent-dark); }
@@ -54,21 +48,14 @@
 
   /* ---------- Header ---------- */
   header.top{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:20px;
-    padding: 16px 24px;
-    background: var(--surface);
-    border-bottom:1px solid var(--line);
-    flex-shrink: 0;
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    padding: 16px 24px; background: var(--surface); border-bottom:1px solid var(--line); flex-shrink: 0;
   }
   .brand{ display:flex; align-items:center; gap:12px; }
   .brand-mark{
     width:36px; height:36px; border-radius:10px;
     background:linear-gradient(150deg, var(--accent), var(--accent-dark));
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:var(--shadow-1);
+    display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-1);
   }
   .brand-mark svg{ width:20px; height:20px; }
   .brand-text h1{ font-family:var(--font-display); font-size:18px; font-weight:700; margin:0; }
@@ -78,37 +65,20 @@
   .cfg-label{ font-size: 13px; font-weight: 600; color: var(--ink-soft); }
   
   input[type="password"], input[type="text"], input[type="number"], select, textarea {
-    font-family:var(--font-body);
-    font-size:13px;
-    padding:8px 12px;
-    border:1px solid var(--line-strong);
-    border-radius:var(--radius-ctl);
-    background:var(--surface);
-    color:var(--ink);
-    transition:border-color .15s ease;
+    font-family:var(--font-body); font-size:13px; padding:8px 12px;
+    border:1px solid var(--line-strong); border-radius:var(--radius-ctl);
+    background:var(--surface); color:var(--ink); transition:border-color .15s ease;
   }
   input::placeholder, textarea::placeholder{ color:var(--ink-faint); }
   input:focus, select:focus, textarea:focus{ border-color:var(--accent); outline:none; }
 
-  /* API Key Wrapper for Eye Icon */
-  .input-with-icon {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
+  /* API Key Wrapper */
+  .input-with-icon { position: relative; display: flex; align-items: center; }
   .input-with-icon input { padding-right: 36px; }
   .icon-btn {
-    position: absolute;
-    right: 4px;
-    background: transparent;
-    border: none;
-    color: var(--ink-soft);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px; height: 28px;
-    border-radius: 6px;
+    position: absolute; right: 4px; background: transparent; border: none; color: var(--ink-soft);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 6px;
   }
   .icon-btn:hover { background: var(--surface-2); color: var(--ink); }
 
@@ -126,9 +96,11 @@
     background: var(--surface); border: 1px solid var(--line);
     border-radius: var(--radius-card); padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow-1);
   }
-  .cl-header{ display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+  .cl-header{ display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+  .cl-title-row { display: flex; align-items: baseline; gap: 8px;}
   .cl-num{ font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--accent); }
   .cl-title{ font-size: 14px; font-weight: 600; }
+  .cl-section { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.05em; }
   
   .file-upload-row{ display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
   .file-input-wrapper{ position: relative; overflow: hidden; display: inline-block; }
@@ -148,7 +120,7 @@
   details.prompt-accordion summary::-webkit-details-marker { display: none; }
   details.prompt-accordion summary:hover { background: var(--line); color: var(--ink); }
   .prompt-content { padding: 12px; background: var(--surface); border-top: 1px solid var(--line); }
-  .prompt-content textarea { width: 100%; height: 120px; resize: vertical; line-height: 1.4; }
+  .prompt-content textarea { width: 100%; height: 160px; resize: vertical; line-height: 1.4; font-family: var(--font-mono); font-size: 12px; }
 
   /* Pagination */
   .pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--line); }
@@ -182,20 +154,23 @@
   .results-feed{ display: flex; flex-direction: column; gap: 12px; }
   .feed-item{
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); 
-    padding: 16px; display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: start;
+    padding: 16px; display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start;
     box-shadow: var(--shadow-1);
   }
-  .feed-thumb{ width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: var(--surface-2); border: 1px solid var(--line); }
-  .feed-body h3{ font-size: 14px; font-weight: 600; margin: 0 0 4px; }
-  .feed-reason{ font-size: 13px; color: var(--ink-soft); margin: 0; line-height: 1.4; }
-  .feed-meta{ display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .feed-thumb{ width: 56px; height: 56px; border-radius: 8px; object-fit: cover; background: var(--surface-2); border: 1px solid var(--line); }
   
-  .status-badge{ font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; }
-  .status-badge.pass{ background: var(--pass-soft); color: var(--pass); }
-  .status-badge.fail{ background: var(--fail-soft); color: var(--fail); }
-  .status-badge.error{ background: var(--warn-soft); color: var(--warn); }
+  .feed-body h3{ font-size: 14px; font-weight: 600; margin: 0 0 6px; }
+  .feed-reason{ font-size: 13px; color: var(--ink-soft); margin: 0 0 10px; line-height: 1.4; }
   
-  .conf-pill{ font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); }
+  .feed-badges { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  
+  .status-badge{ font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; border: 1px solid transparent; }
+  .status-badge.pass{ background: var(--pass-soft); color: var(--pass); border-color: #BFE0CC;}
+  .status-badge.fail{ background: var(--fail-soft); color: var(--fail); border-color: #F0C4B8;}
+  .status-badge.error{ background: var(--warn-soft); color: var(--warn); border-color: #EAD79C;}
+  .status-badge.neutral{ background: var(--surface-2); color: var(--ink-soft); border-color: var(--line-strong); }
+  
+  .conf-pill{ font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); margin-left: auto; }
   .empty-state{ text-align: center; padding: 40px 20px; color: var(--ink-faint); font-size: 14px; }
 </style>
 </head>
@@ -219,7 +194,7 @@
         <label class="cfg-label" for="apiKeyInput">API Key</label>
         <div class="input-with-icon">
           <input type="password" id="apiKeyInput" placeholder="AIza..." style="width: 180px;" autocomplete="off" />
-          <button type="button" class="icon-btn" id="toggleKeyBtn" title="Show / hide key" aria-label="Show or hide API key">
+          <button type="button" class="icon-btn" id="toggleKeyBtn" title="Show / hide key">
             <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
           </button>
         </div>
@@ -273,7 +248,7 @@
 
       <div class="score-card">
         <div class="score-val" id="scoreValue">0 / 0</div>
-        <div class="score-label" id="scoreLabel">Passed Checklists</div>
+        <div class="score-label" id="scoreLabel">Checklists Passed</div>
       </div>
 
       <div class="results-actions">
@@ -287,7 +262,7 @@
       </div>
 
       <div class="results-feed" id="resultsFeed">
-        <div class="empty-state">Upload images and run the audit to see results here. Un-uploaded checklists will be skipped.</div>
+        <div class="empty-state">Upload images on the left and run the audit. Un-uploaded checklists will be skipped automatically.</div>
       </div>
     </div>
   </div>
@@ -296,32 +271,43 @@
 (function(){
   "use strict";
 
+  // The 32-item checklist, fully optimized for LLM visual verification
   const DEFAULT_CHECKPOINTS = [
-    { label:'Main Brand Signage & Illumination', rule:'Compare brightness/contrast across the lettering and look for dark or shadowed letters, dead bulbs, or uneven illumination.' },
-    { label:'Paved Approach, Driveway & Gates', rule:'Scan the ground surface for dark high-contrast patches (oil leaks), litter, standing puddles, or cracked paving.' },
-    { label:'Customer Parking Allocation', rule:'Identify parked vehicles in customer bays; flag if dealer/staff vehicles appear to occupy customer parking.' },
-    { label:'Valet Desk & Security Guard Presence', rule:'Confirm a person is visibly present and attentive at the entrance; flag if absent or distracted.' },
-    { label:'Entrance Glass Doors & Tracks', rule:'Look at the glass surface and tracks for smudges, handprints, dust, or debris.' },
-    { label:'Foot Mats & Welcome Walkway', rule:'Check that the mat is square to the door frame, unfolded, clean, and not curled at the edges.' },
-    { label:'Main Floor Cleanliness', rule:'Evaluate floor reflection uniformity; flag dull, scuffed, stained, or visibly dirty patches.' },
-    { label:'Ceiling Spotlights & Tracks', rule:'Scan the ceiling for dark/unlit circles among the spotlights indicating missing bulbs.' },
-    { label:'HVAC Diffusers & Ambient Temp', rule:'Read visible digital thermostats; check vents for visible dust rings.' },
-    { label:'Customer Lounge Seating Alignment', rule:'Check that furniture is neatly arranged and aligned, consistent with a tidy lounge.' }
+    { sr: 1, section: "Section A1: Exterior, Access & First Impression", label: "Main Brand Signage & Illumination", rule: "Examine the main brand signage. It must be fully visible, legible, and evenly illuminated. Fail the image if the sign is broken, hidden by obstructions (like trees or banners), has burnt-out/dead bulbs, or is noticeably shadowed or unreadable." },
+    { sr: 2, section: "Section A1: Exterior, Access & First Impression", label: "Paved Approach, Driveway & Gates", rule: "Look at the driveway and paved entrance. A pass requires a clean, well-maintained surface. Fail the image if you see large dark oil stains, accumulated litter/garbage, standing water puddles, or severe cracks/potholes." },
+    { sr: 3, section: "Section A1: Exterior, Access & First Impression", label: "Customer Parking Allocation", rule: "Check the designated customer parking bays. They should be empty or hold standard civilian cars. Fail the image if these specific customer spots are occupied by identical dealership fleet cars, test-drive vehicles (with decals), or staff vehicles." },
+    { sr: 4, section: "Section A1: Exterior, Access & First Impression", label: "Valet Desk & Security Guard Presence", rule: "Locate the valet or security desk at the entrance. A pass requires a guard or attendant to be physically present and visibly attentive (standing or sitting upright). Fail if the desk is completely empty or the attendant is clearly slouching, sleeping, or distracted." },
+    { sr: 5, section: "Section A1: Exterior, Access & First Impression", label: "Entrance Glass Doors & Tracks", rule: "Inspect the main glass entrance doors and their bottom tracks. The glass should be mostly transparent and clean. Fail the image if there are highly visible, distracting grease smudges, large handprints, or heavy dirt/debris clogging the floor tracks." },
+    { sr: 6, section: "Section A1: Exterior, Access & First Impression", label: "Foot Mats & Welcome Walkway", rule: "Examine the welcome foot mat at the entrance. It should lay flat and be aligned with the door. Fail if the mat is severely crooked, folded over, curling at the edges, or heavily soiled." },
+    { sr: 7, section: "Section A2: Interior Hygiene, Facility Upkeep & Ambience", label: "Main Floor Cleanliness", rule: "Look at the main showroom floor. It should appear clean with a uniform shine or finish. Fail the image if you see distinct dull patches, dark scuff marks, wet spills, or noticeable dirt/stains." },
+    { sr: 8, section: "Section A2: Interior Hygiene, Facility Upkeep & Ambience", label: "Ceiling Spotlights & Tracks", rule: "Examine the showroom ceiling lighting grid and spotlights. The lighting should be uniform. Fail the image if there are clearly visible burnt-out bulbs (dark spots in the fixtures) or fixtures hanging loose/broken." },
+    { sr: 9, section: "Section A2: Interior Hygiene, Facility Upkeep & Ambience", label: "HVAC Diffusers & Ambient Temperature", rule: "Check any visible thermostat readings and the ceiling AC vents. Fail if the thermostat reads an uncomfortable extreme (e.g., above 26C/78F or below 18C/64F), or if the AC vents have visible, heavy black dust rings around them." },
+    { sr: 10, section: "Section A2: Interior Hygiene, Facility Upkeep & Ambience", label: "Background Music & Scent Level", rule: "Since audio/scent cannot be heard/smelled, look for visible audio or scent equipment (speakers, diffusers). Pass if they appear intact and powered on. Fail if speakers are visibly damaged, wires are hanging out, or scent diffusers look broken/empty." },
+    { sr: 11, section: "Section A2: Interior Hygiene, Facility Upkeep & Ambience", label: "Customer Lounge Seating Alignment", rule: "Look at the customer lounge area. The furniture should be arranged neatly. Fail the image if chairs/tables are haphazardly pushed together, blocking walkways, or if the tables are cluttered with trash." },
+    { sr: 12, section: "Section A2: Interior Hygiene, Facility Upkeep & Ambience", label: "Hospitality Pantry & Coffee Bar", rule: "Inspect the coffee/pantry area. It should look stocked and hygienic. Fail the image if supplies (cups, stirrers) are depleted, countertops are stained/messy, or trash cans are visibly overflowing." },
+    { sr: 13, section: "Section A2: Interior Hygiene, Facility Upkeep & Ambience", label: "Restroom Deep Hygiene (Male/Female)", rule: "Examine the restroom area. It must look sanitary. Fail the image if there are visible puddles of water on the floor, heavy streaks/stains on the mirrors, overflowing trash, or empty paper towel/tissue dispensers." },
+    { sr: 14, section: "Section A3: Display Vehicles & Merchandising", label: "Display Cars Exterior Polish", rule: "Look at the paint finish of the cars displayed inside the showroom. They should have a high-gloss, clean reflection. Fail if the car body is covered in a visible layer of dust, has heavy smudges/fingerprints, or lacks a polished shine." },
+    { sr: 15, section: "Section A3: Display Vehicles & Merchandising", label: "Wheel Rim & Tyre Dressing", rule: "Examine the wheels and tyres of the display cars. The tyres should be a deep, clean black and rims should be shining. Fail if the tyres show brown mud/dirt, or if the rims have visible brake dust, grime, or rust streaks." },
+    { sr: 16, section: "Section A3: Display Vehicles & Merchandising", label: "Vehicle Cabin Cleanliness", rule: "Look inside the cabin of the display car (seats, footwells, console). It should be pristine. Fail the image if you see leftover mechanic rags, plastic protective wrap that should have been removed, paper floor mats, or random trash/clutter." },
+    { sr: 17, section: "Section A3: Display Vehicles & Merchandising", label: "Display Vehicle Locking Status", rule: "Look for visual cues regarding the car doors. Since physical locking is hard to see, fail the image if a door is left completely ajar/open unattended, or if keys are visibly left sitting out on the roof or hood." },
+    { sr: 18, section: "Section A3: Display Vehicles & Merchandising", label: "Spec Sheets & Digital Price Stands", rule: "Examine the vehicle specification boards or digital price stands next to the cars. Fail the image if the stand is completely blank, the paper is torn/falling off, or the digital screen is turned off or showing an error." },
+    { sr: 19, section: "Section A4: Digital Aids, Connectivity & Phygital Assets", label: "Interactive Touch Kiosks", rule: "Look at the customer interactive screens/kiosks. They should display the dealership's app or branding. Fail if the screen is dead, showing a generic Windows/Android home screen, or displaying a system crash/error message." },
+    { sr: 20, section: "Section A4: Digital Aids, Connectivity & Phygital Assets", label: "Large Scale Video Wall / AV Screens", rule: "Check the large promotional video walls or TVs. They should show clear video content. Fail the image if screens have dead black panels, are completely turned off, show static, or display a 'No Signal' / blue screen." },
+    { sr: 21, section: "Section A4: Digital Aids, Connectivity & Phygital Assets", label: "Consultant Digital Tablets", rule: "Look at the sales consultant desks. There should be digital tablets visible for customer use. Fail if the desks are completely bare of digital presentation tools where they are normally expected." },
+    { sr: 22, section: "Section A4: Digital Aids, Connectivity & Phygital Assets", label: "Wi-Fi Connectivity & Hotspots", rule: "Look for Wi-Fi signage or digital displays showing network status. Pass if Wi-Fi network details are clearly posted for customers. Fail if Wi-Fi signs are missing, torn, or if a visible router setup looks messy/unplugged." },
+    { sr: 23, section: "Section A5: Test Drive (TD) Fleet Readiness", label: "TD Fleet Washing & Appearance", rule: "Inspect the exterior of the test drive (TD) fleet cars. They must look presentable. Fail the image if the cars are visibly dirty, covered in rain spots/mud, or show obvious, large scratches or dents on the body panels." },
+    { sr: 24, section: "Section A5: Test Drive (TD) Fleet Readiness", label: "Dashboard Diagnostics & Warning Lights", rule: "Look at the illuminated dashboard of the test drive car. It should be clear of faults. Fail the image immediately if you see any red or amber warning lights glowing (e.g., Check Engine, Airbag, Low Tire Pressure, ABS)." },
+    { sr: 25, section: "Section A5: Test Drive (TD) Fleet Readiness", label: "Fuel Levels & EV State of Charge", rule: "Check the fuel gauge or EV battery readout on the dash. Test drive cars need sufficient range. Fail the image if the fuel needle is hitting empty/reserve, or if the EV charge indicates less than 20% remaining." },
+    { sr: 26, section: "Section A5: Test Drive (TD) Fleet Readiness", label: "Cabin Air Quality & Sanitization", rule: "Inspect the floor mats and seats inside the test drive car. It should be clean for the next customer. Fail if there are visible dirt clods, small stones, leaves, or noticeable stains on the carpets and seats." },
+    { sr: 27, section: "Section A5: Test Drive (TD) Fleet Readiness", label: "Mandatory Safety Equipment", rule: "Look in the trunk or designated safety area of the test drive vehicle. It must carry emergency gear. Fail if required safety items (like a red fire extinguisher or emergency triangle case) are visibly missing or unsecured." },
+    { sr: 28, section: "Section A5: Test Drive (TD) Fleet Readiness", label: "Glove Box Compliance Folders", rule: "Check the vehicle document folder (registration, insurance). While dates might be hard to read, fail the image if the document folder is missing, torn apart, or documents are haphazardly scattered across the passenger seat." },
+    { sr: 29, section: "Section A6: Staff Grooming, Deportment & Workspace", label: "Corporate Uniform Compliance", rule: "Look at the dealership staff. They should be wearing the standard corporate uniform. Fail the image if staff are visibly wearing casual clothes (t-shirts, jeans, sneakers) or mismatched, untucked, sloppy attire." },
+    { sr: 30, section: "Section A6: Staff Grooming, Deportment & Workspace", label: "ID Card Visibility", rule: "Examine the chest/lanyard area of the visible staff members. They must carry identification. Fail the image if the staff member is clearly interacting with customers but is NOT wearing a visible ID badge or name tag." },
+    { sr: 31, section: "Section A6: Staff Grooming, Deportment & Workspace", label: "Personal Grooming Standards", rule: "Look at the general appearance of the staff. They should look professional. Fail if footwear is visibly dirty/unpolished, or if general grooming appears excessively unkempt or unprofessional for a corporate showroom." },
+    { sr: 32, section: "Section A6: Staff Grooming, Deportment & Workspace", label: "Consultant Workstations & Desk Clutter", rule: "Inspect the sales consultant desks where customers sit. It should be clean and professional. Fail the image if the desk is cluttered with personal lunch boxes, gym bags, scattered loose papers, or messy cables." }
   ];
 
-  while(DEFAULT_CHECKPOINTS.length < 32) {
-    DEFAULT_CHECKPOINTS.push({
-      label: `Additional Checkpoint ${DEFAULT_CHECKPOINTS.length + 1}`,
-      rule: 'Carefully assess the image against standard facility compliance guidelines.'
-    });
-  }
-
-  const state = {
-    checklists: [], 
-    results: [],
-    currentPage: 1,
-    itemsPerPage: 5
-  };
+  const state = { checklists: [], results: [], currentPage: 1, itemsPerPage: 5 };
 
   const $ = (id) => document.getElementById(id);
   const checklistContainer = $('checklistContainer');
@@ -348,39 +334,43 @@
       : '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/>';
   });
 
-  function buildDefaultPrompt(label, rule) {
-    return `You are an expert QA auditor reviewing a single image for a facility audit.
-Your task is to evaluate the following specific checkpoint:
+  // Strict structured prompt enforcing the JSON format
+  function buildDefaultPrompt(sr, label, rule) {
+    return `You are an expert QA auditor reviewing an image for a facility compliance audit. Evaluate the image against the provided checklist item and its rule.
 
-CHECKPOINT: "${label}"
-GUIDANCE: ${rule}
+Checklist Number: ${sr}
+Checklist Name: ${label}
+Validation Rule: ${rule}
 
-Step 1: Determine if the image is clear enough to evaluate this checkpoint.
-Step 2: Determine if the checkpoint PASSES or FAILS based strictly on visual evidence.
-Step 3: Provide a concise 1-2 sentence reason for your verdict.
-Step 4: Provide a confidence score from 0 to 100.
+Perform the following evaluation:
+1. Clear Image Check (YES/NO): Is the image clear, well-lit, and readable enough to evaluate this specific checkpoint?
+2. Checklist Result (PASS/FAIL): Based strictly on visual evidence and the Validation Rule, does the image pass or fail? (If the image is completely unclear or the item is missing, this must be FAIL).
+3. Reason: Provide a 1-2 sentence explanation citing what you visually observe.
+4. Confidence: Provide an integer (0-100) representing your confidence in this assessment.
 
-Respond strictly in JSON format:
+Respond ONLY with valid JSON using this exact structure:
 {
-  "pass": boolean,
-  "confidence": number,
-  "reason": "string"
+  "checklist_number": "${sr}",
+  "checklist_name": "${label}",
+  "clear_image_check": "YES",
+  "checklist_result": "PASS",
+  "confidence": 95,
+  "reason": "Brief reason here."
 }`;
   }
 
-  // Initialize Data Store Once
   function initData() {
-    state.checklists = DEFAULT_CHECKPOINTS.map((cp, index) => ({
-      id: index,
+    state.checklists = DEFAULT_CHECKPOINTS.map((cp) => ({
+      id: cp.sr,
+      section: cp.section,
       label: cp.label,
       file: null,
       filename: 'No file selected',
       thumbBase64: null,
-      promptText: buildDefaultPrompt(cp.label, cp.rule)
+      promptText: buildDefaultPrompt(cp.sr, cp.label, cp.rule)
     }));
   }
 
-  // Render Page
   function renderPage() {
     checklistContainer.innerHTML = '';
     
@@ -397,87 +387,72 @@ Respond strictly in JSON format:
       card.className = 'checklist-card';
       card.innerHTML = `
         <div class="cl-header">
-          <span class="cl-num">#${i + 1}</span>
-          <span class="cl-title">${item.label}</span>
+          <div class="cl-section">${item.section}</div>
+          <div class="cl-title-row">
+            <span class="cl-num">#${item.id}</span>
+            <span class="cl-title">${item.label}</span>
+          </div>
         </div>
         
         <div class="file-upload-row">
           <div class="file-input-wrapper">
             <button class="btn-upload">${item.file ? 'Change Image' : 'Choose Image'}</button>
-            <input type="file" accept="image/*" id="file-${i}" />
+            <input type="file" accept="image/*" id="file-${item.id}" />
           </div>
-          <span class="file-name" id="filename-${i}">${item.filename}</span>
+          <span class="file-name" id="filename-${item.id}">${item.filename}</span>
         </div>
 
         <details class="prompt-accordion">
           <summary>Edit Prompt</summary>
           <div class="prompt-content">
-            <textarea id="prompt-${i}">${item.promptText}</textarea>
+            <textarea id="prompt-${item.id}">${item.promptText}</textarea>
           </div>
         </details>
       `;
       checklistContainer.appendChild(card);
 
-      $(`file-${i}`).addEventListener('change', async (e) => {
+      $(`file-${item.id}`).addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (file) {
           item.filename = file.name;
-          $(`filename-${i}`).textContent = file.name;
+          $(`filename-${item.id}`).textContent = file.name;
           item.file = file;
           item.thumbBase64 = await fileToDataUrl(file);
           e.target.previousElementSibling.textContent = 'Change Image';
         } else {
           item.filename = 'No file selected';
-          $(`filename-${i}`).textContent = item.filename;
+          $(`filename-${item.id}`).textContent = item.filename;
           item.file = null;
           item.thumbBase64 = null;
           e.target.previousElementSibling.textContent = 'Choose Image';
         }
       });
 
-      $(`prompt-${i}`).addEventListener('input', (e) => {
+      $(`prompt-${item.id}`).addEventListener('input', (e) => {
         item.promptText = e.target.value;
       });
     }
 
-    // Update Pagination UI
     pageInfo.textContent = state.itemsPerPage === 'all' ? `Showing All ${totalItems}` : `Page ${state.currentPage} of ${totalPages}`;
     prevBtn.disabled = state.currentPage === 1;
     nextBtn.disabled = state.currentPage === totalPages || state.itemsPerPage === 'all';
   }
 
-  // Pagination Handlers
-  prevBtn.addEventListener('click', () => {
-    if (state.currentPage > 1) { state.currentPage--; renderPage(); }
-  });
+  prevBtn.addEventListener('click', () => { if (state.currentPage > 1) { state.currentPage--; renderPage(); }});
   nextBtn.addEventListener('click', () => {
     const totalPages = Math.ceil(state.checklists.length / (parseInt(state.itemsPerPage, 10) || state.checklists.length));
     if (state.currentPage < totalPages) { state.currentPage++; renderPage(); }
   });
-  qtySelect.addEventListener('change', () => {
-    state.itemsPerPage = qtySelect.value;
-    state.currentPage = 1; 
-    renderPage();
-  });
+  qtySelect.addEventListener('change', () => { state.itemsPerPage = qtySelect.value; state.currentPage = 1; renderPage(); });
 
   initData();
   renderPage();
 
   // --- Helpers ---
-  function fileToDataUrl(file){
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-  function splitDataUrl(dataUrl){
-    const m = /^data:(.*?);base64,(.*)$/.exec(dataUrl);
-    return { mimeType: m[1] || 'image/jpeg', base64: m[2] };
-  }
+  function fileToDataUrl(file){ return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result)); reader.onerror = reject; reader.readAsDataURL(file); }); }
+  function splitDataUrl(dataUrl){ const m = /^data:(.*?);base64,(.*)$/.exec(dataUrl); return { mimeType: m[1] || 'image/jpeg', base64: m[2] }; }
   function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
-  function escapeCsv(val){ return '"' + String(val).replace(/"/g, '""') + '"'; }
+  function escapeCsv(val){ return '"' + String(val || '').replace(/"/g, '""') + '"'; }
 
   // --- API Call ---
   async function callGemini(apiKey, model, base64, mimeType, prompt) {
@@ -517,25 +492,58 @@ Respond strictly in JSON format:
     for (let i = 0; i < activeItems.length; i++) {
       const item = activeItems[i];
       const { base64, mimeType } = splitDataUrl(item.thumbBase64);
-      let result;
+      let parsedResponse;
+      let isError = false;
+
       try {
-        const resJson = await callGemini(apiKey, model, base64, mimeType, item.promptText);
-        result = { id: item.id, label: item.label, thumb: item.thumbBase64, pass: resJson.pass === true, confidence: resJson.confidence || 0, reason: resJson.reason || 'No reason provided.', error: false };
+        parsedResponse = await callGemini(apiKey, model, base64, mimeType, item.promptText);
       } catch (err) {
-        result = { id: item.id, label: item.label, thumb: item.thumbBase64, pass: false, confidence: 0, reason: `Error: ${err.message}`, error: true };
+        isError = true;
+        parsedResponse = {
+          checklist_number: item.id,
+          checklist_name: item.label,
+          clear_image_check: "N/A",
+          checklist_result: "ERROR",
+          confidence: 0,
+          reason: `API Error: ${err.message}`
+        };
       }
 
-      state.results.push(result);
-      if (result.pass && !result.error) passCount++;
+      // Format normalizations
+      const clearCheck = String(parsedResponse.clear_image_check || 'NO').toUpperCase();
+      const resultPass = String(parsedResponse.checklist_result || 'FAIL').toUpperCase() === 'PASS';
+      const resultString = resultPass ? 'PASS' : (isError ? 'ERROR' : 'FAIL');
+      const badgeClass = isError ? 'error' : (resultPass ? 'pass' : 'fail');
+      const clearBadgeClass = clearCheck === 'YES' ? 'pass' : (clearCheck === 'NO' ? 'fail' : 'neutral');
 
-      const statusClass = result.error ? 'error' : (result.pass ? 'pass' : 'fail');
-      const statusText = result.error ? 'ERROR' : (result.pass ? 'PASS' : 'FAIL');
+      const finalResult = {
+        id: item.id,
+        label: item.label,
+        thumb: item.thumbBase64,
+        clear_image_check: clearCheck,
+        checklist_result: resultString,
+        confidence: parsedResponse.confidence || 0,
+        reason: parsedResponse.reason || 'No reason provided.'
+      };
+
+      state.results.push(finalResult);
+      if (resultPass && !isError) passCount++;
+
       const feedItem = document.createElement('div');
       feedItem.className = 'feed-item';
       feedItem.innerHTML = `
-        <img src="${result.thumb}" class="feed-thumb" alt="thumb">
-        <div class="feed-body"><h3>#${item.id + 1}: ${item.label}</h3><p class="feed-reason">${result.reason}</p></div>
-        <div class="feed-meta"><span class="status-badge ${statusClass}">${statusText}</span><span class="conf-pill">Conf: ${result.confidence}%</span></div>
+        <img src="${finalResult.thumb}" class="feed-thumb" alt="thumb">
+        <div>
+          <div class="feed-body">
+            <h3>#${finalResult.id}: ${finalResult.label}</h3>
+            <p class="feed-reason">${finalResult.reason}</p>
+          </div>
+          <div class="feed-badges">
+            <span class="status-badge ${badgeClass}">Result: ${finalResult.checklist_result}</span>
+            <span class="status-badge ${clearBadgeClass}">Clear Image: ${finalResult.clear_image_check}</span>
+            <span class="conf-pill">Conf: ${finalResult.confidence}%</span>
+          </div>
+        </div>
       `;
       resultsFeed.appendChild(feedItem);
 
@@ -554,14 +562,25 @@ Respond strictly in JSON format:
   // --- Export CSV ---
   exportBtn.addEventListener('click', () => {
     if (state.results.length === 0) return;
-    const headers = ['Checklist Number', 'Checkpoint Label', 'Verdict', 'Confidence', 'Reason'];
+    
+    const headers = [
+      'checklist_number',
+      'checklist_name',
+      'clear_image_check',
+      'checklist_result',
+      'confidence',
+      'reason'
+    ];
+    
     const rows = state.results.map(r => [
-      r.id + 1,
+      r.id,
       escapeCsv(r.label),
-      r.error ? 'ERROR' : (r.pass ? 'PASS' : 'FAIL'),
+      escapeCsv(r.clear_image_check),
+      escapeCsv(r.checklist_result),
       r.confidence,
       escapeCsv(r.reason)
     ]);
+    
     const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
