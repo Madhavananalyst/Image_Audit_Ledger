@@ -143,11 +143,26 @@
   /* ---------- Right: Results & Score ---------- */
   .score-card{
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); 
-    padding: 24px; margin-bottom: 24px; text-align: center; box-shadow: var(--shadow-1);
+    padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-1);
+    display: flex; align-items: center;
   }
+  .score-left{ flex: 1; text-align: center; }
+  .score-divider{ width: 1px; align-self: stretch; background: var(--line); margin: 0 24px; }
+  .score-right{ flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+  .score-top{ display: flex; align-items: center; justify-content: center; gap: 10px; }
   .score-val{ font-family: var(--font-display); font-size: 36px; font-weight: 700; color: var(--ink); }
   .score-label{ font-size: 14px; color: var(--ink-soft); margin-top: 4px; }
   .score-val.pass{ color: var(--pass); }
+
+  .stat-row{ display: flex; align-items: center; justify-content: space-between; gap: 12px; font-family: var(--font-mono); font-size: 13px; }
+  .stat-row .stat-label{ color: var(--ink-faint); }
+  .stat-row .stat-value{ font-weight: 700; color: var(--ink); }
+  .stats-empty{ font-size: 13px; color: var(--ink-faint); }
+
+  .status-pill{ font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 4px 9px; border-radius: 20px; border: 1px solid transparent; }
+  .status-pill.idle{ background: var(--surface-2); color: var(--ink-soft); border-color: var(--line-strong); }
+  .status-pill.processing{ background: var(--accent-soft); color: var(--accent-dark); border-color: var(--accent); }
+  .status-pill.completed{ background: var(--pass-soft); color: var(--pass); border-color: #BFE0CC; }
   
   .results-actions { display: flex; gap: 12px; margin-bottom: 24px; }
 
@@ -251,14 +266,26 @@
       </div>
 
       <div class="score-card">
-        <div class="score-val" id="scoreValue">0 / 0</div>
-        <div class="score-label" id="scoreLabel">Checklists Passed</div>
+        <div class="score-left">
+          <div class="score-top">
+            <div class="score-val" id="scoreValue">—</div>
+            <span class="status-pill idle" id="statusPill">Idle</span>
+          </div>
+          <div class="score-label" id="scoreLabel">Pass Rate</div>
+        </div>
+        <div class="score-divider"></div>
+        <div class="score-right" id="scoreStats">
+          <span class="stats-empty">No checklist run yet</span>
+        </div>
       </div>
 
       <div class="results-actions">
         <button class="btn btn-primary" id="runBtn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 4.5v15l13-7.5-13-7.5Z" fill="currentColor"/></svg>
           Run Audit
+        </button>
+        <button class="btn btn-secondary" id="clearBtn">
+          Clear
         </button>
         <button class="btn btn-secondary" id="exportBtn" style="display:none;">
           Export CSV
@@ -317,9 +344,13 @@
   const checklistContainer = $('checklistContainer');
   const qtySelect = $('qtySelect');
   const runBtn = $('runBtn');
+  const clearBtn = $('clearBtn');
   const exportBtn = $('exportBtn');
   const resultsFeed = $('resultsFeed');
   const scoreValue = $('scoreValue');
+  const scoreLabel = $('scoreLabel');
+  const scoreStats = $('scoreStats');
+  const statusPill = $('statusPill');
   const apiKeyInput = $('apiKeyInput');
   const toggleKeyBtn = $('toggleKeyBtn');
   const eyeIcon = $('eyeIcon');
@@ -458,6 +489,39 @@ Respond ONLY with valid JSON using this exact structure:
   function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
   function escapeCsv(val){ return '"' + String(val || '').replace(/"/g, '""') + '"'; }
 
+  // --- Status & Score helpers ---
+  function setStatus(status) {
+    // status: 'idle' | 'processing' | 'completed'
+    statusPill.className = `status-pill ${status}`;
+    statusPill.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+  function updateScoreCard(passCount, failCount, errorCount, uploadedTotal) {
+    const attempted = passCount + failCount + errorCount;
+    if (uploadedTotal === 0) {
+      scoreValue.textContent = '—';
+      scoreValue.classList.remove('pass');
+      scoreLabel.textContent = 'Pass Rate';
+      scoreStats.innerHTML = '<span class="stats-empty">No checklist run yet</span>';
+      return;
+    }
+    const pct = attempted > 0 ? Math.round((passCount / attempted) * 100) : 0;
+    scoreValue.textContent = `${pct}%`;
+    scoreValue.classList.toggle('pass', attempted === uploadedTotal && passCount === uploadedTotal);
+    scoreLabel.textContent = 'Pass Rate';
+
+    const rows = [
+      { label: 'Uploaded', value: uploadedTotal },
+      { label: 'Passed', value: passCount },
+      { label: 'Failed', value: failCount }
+    ];
+    if (errorCount > 0) rows.push({ label: 'Errors', value: errorCount });
+
+    scoreStats.innerHTML = rows.map(r =>
+      `<div class="stat-row"><span class="stat-label">${r.label}</span><span class="stat-value">${r.value}</span></div>`
+    ).join('');
+  }
+
   // --- API Call ---
   async function callGemini(apiKey, model, base64, mimeType, prompt) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
@@ -487,11 +551,13 @@ Respond ONLY with valid JSON using this exact structure:
     const delay = parseInt(delayInput.value, 10) || 350;
 
     runBtn.disabled = true;
+    clearBtn.disabled = true;
     exportBtn.style.display = 'none';
     runBtn.textContent = 'Running...';
     resultsFeed.innerHTML = '';
     state.results = [];
-    let passCount = 0;
+    setStatus('processing');
+    let passCount = 0, failCount = 0, errorCount = 0;
 
     for (let i = 0; i < activeItems.length; i++) {
       const item = activeItems[i];
@@ -523,6 +589,7 @@ Respond ONLY with valid JSON using this exact structure:
       const finalResult = {
         id: item.id,
         label: item.label,
+        filename: item.filename,
         thumb: item.thumbBase64,
         clear_image_check: clearCheck,
         checklist_result: resultString,
@@ -532,6 +599,8 @@ Respond ONLY with valid JSON using this exact structure:
 
       state.results.push(finalResult);
       if (resultPass && !isError) passCount++;
+      else if (isError) errorCount++;
+      else failCount++;
 
       const feedItem = document.createElement('div');
       feedItem.className = 'feed-item';
@@ -551,16 +620,33 @@ Respond ONLY with valid JSON using this exact structure:
       `;
       resultsFeed.appendChild(feedItem);
 
-      scoreValue.textContent = `${passCount} / ${i + 1}`;
-      scoreValue.classList.toggle('pass', passCount === activeItems.length);
+      updateScoreCard(passCount, failCount, errorCount, activeItems.length);
 
       if (i < activeItems.length - 1) await sleep(delay);
     }
 
-    scoreValue.textContent = `${passCount} / ${activeItems.length}`;
+    setStatus('completed');
     runBtn.disabled = false;
+    clearBtn.disabled = false;
     runBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 4.5v15l13-7.5-13-7.5Z" fill="currentColor"/></svg> Run Audit`;
     exportBtn.style.display = 'block';
+  });
+
+  // --- Clear current results / start new checklist ---
+  clearBtn.addEventListener('click', () => {
+    state.checklists.forEach((item) => {
+      item.file = null;
+      item.filename = 'No file selected';
+      item.thumbBase64 = null;
+    });
+    state.results = [];
+    state.currentPage = 1;
+
+    resultsFeed.innerHTML = '<div class="empty-state">Upload images on the left and run the audit. Un-uploaded checklists will be skipped automatically.</div>';
+    exportBtn.style.display = 'none';
+    setStatus('idle');
+    updateScoreCard(0, 0, 0, 0);
+    renderPage();
   });
 
   // --- Export CSV ---
@@ -570,6 +656,7 @@ Respond ONLY with valid JSON using this exact structure:
     const headers = [
       'checklist_number',
       'checklist_name',
+      'image_filename',
       'clear_image_check',
       'checklist_result',
       'confidence',
@@ -579,6 +666,7 @@ Respond ONLY with valid JSON using this exact structure:
     const rows = state.results.map(r => [
       r.id,
       escapeCsv(r.label),
+      escapeCsv(r.filename),
       escapeCsv(r.clear_image_check),
       escapeCsv(r.checklist_result),
       r.confidence,
