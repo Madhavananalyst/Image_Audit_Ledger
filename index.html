@@ -240,9 +240,9 @@
           <select id="qtySelect">
             <option value="1">1</option>
             <option value="2">2</option>
-            <option value="5" selected>5</option>
+            <option value="5">5</option>
             <option value="10">10</option>
-            <option value="all">All</option>
+            <option value="all" selected>All</option>
           </select>
         </div>
       </div>
@@ -335,7 +335,7 @@
     { sr: 32, section: "Section A6: Staff Grooming, Deportment & Workspace", label: "Consultant Workstations & Desk Clutter", rule: "Inspect the sales consultant desks where customers sit. It should be clean and professional. Fail the image if the desk is cluttered with personal lunch boxes, gym bags, scattered loose papers, or messy cables." }
   ];
 
-  const state = { checklists: [], results: [], currentPage: 1, itemsPerPage: 5 };
+  const state = { checklists: [], results: [], currentPage: 1, itemsPerPage: 'all' };
 
   const $ = (id) => document.getElementById(id);
   const checklistContainer = $('checklistContainer');
